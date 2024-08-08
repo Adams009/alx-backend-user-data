@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3i
 """Module of Users views.
 """
 from api.v1.views import app_views
@@ -23,15 +23,18 @@ def view_one_user(user_id: str = None) -> str:
       - User ID.
     Return:
       - User object JSON represented.
-      - 404 if the User ID doesn't exist.
+      - 404 if the User ID doesn't exist or if the user is not authent for 'me'
     """
     if user_id is None:
         abort(404)
+
+    # If user_id is 'me', check the current_user
     if user_id == 'me':
         if request.current_user is None:
-            abort(404)
-        else:
-            return jsonify(request.current_user.to_json())
+            abort(404)  # Return 404 if no user is authenticated
+        return jsonify(request.current_user.to_json())
+
+    # Otherwise, handle the standard user ID
     user = User.get(user_id)
     if user is None:
         abort(404)
