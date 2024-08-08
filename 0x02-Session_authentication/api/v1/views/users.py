@@ -128,3 +128,15 @@ def update_user(user_id: str = None) -> str:
         user.last_name = rj.get('last_name')
     user.save()
     return jsonify(user.to_json()), 200
+
+
+@app_views.route('/users/me', methods=['GET'], strict_slashes=False)
+def get_me() -> str:
+    """GET /api/v1/users/me
+    Return:
+      - Authenticated User object JSON represented.
+      - 404 if no user is authenticated.
+    """
+    if request.current_user is None:
+        abort(404)  # Return 404 if no user is authenticated
+    return jsonify(request.current_user.to_json())
